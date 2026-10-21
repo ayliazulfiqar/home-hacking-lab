@@ -54,7 +54,7 @@ The Nmap scan confirmed that Kali could reach the target. The target's ping test
 
 The target's failed ping is a useful check, but I should also verify its VirtualBox adapter settings and routing configuration to confirm the intended isolation.
 
-![Ping test](screenshots/ping-test.png)
+![Ping test](ping-tes.png)
 
 ## Snapshots
 
