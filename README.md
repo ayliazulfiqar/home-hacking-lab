@@ -110,7 +110,7 @@ These versions and services are old and may contain known security weaknesses. A
 - **HTTP (port 80):** The server reported an old Apache version and WebDAV support. Outdated software and misconfigured file-authoring features can increase the risk of unauthorized access.
 - **Telnet (port 23):** Telnet does not encrypt login credentials or session traffic, so information may be exposed if someone can observe the network.
 
-![Nmap results](screenshots/nmap-scan.png)
+![Nmap results](full-nmap-scan.png)
 
 ## Problems I Hit
 
