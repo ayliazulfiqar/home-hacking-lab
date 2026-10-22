@@ -54,14 +54,12 @@ The Nmap scan confirmed that Kali could reach the target. The target's ping test
 
 The target's failed ping is a useful check, but I should also verify its VirtualBox adapter settings and routing configuration to confirm the intended isolation.
 
-![Ping test kali linux](https://github.com/ayliazulfiqar/home-hacking-lab/blob/main/screenshots/kali-ports-output.png)
-![Ping test metaspoitable](https://github.com/ayliazulfiqar/home-hacking-lab/blob/main/screenshots/metasploitable.png)
+![Ping test kali linux](/screenshots/kali-ports-output.png)
+![Ping test metaspoitable](/screenshots/metasploitable.png)
 
 ## Snapshots
 
 The planned snapshot name for both virtual machines is `clean-baseline`. VirtualBox snapshots belong to individual VMs, so both VMs can use the same snapshot name.
-
-**Status:** Confirm that the snapshot has been taken for each VM before stating that both snapshots are complete.
 
 ## First Scan
 
@@ -108,10 +106,10 @@ These versions and services are old and may contain known security weaknesses. A
 ### Three Services That Stood Out
 
 - **FTP (port 21):** Anonymous login was allowed. This could expose files to users who should not have access. Traditional FTP also does not encrypt credentials or data.
-- **HTTP (port 80):** The server reported an old Apache version and WebDAV support. Outdated software and misconfigured file-authoring features can increase the risk of unauthorized access.
+- **HTTP (port 80):** The server reported an old Apache version and WebDAV support. Outdated software and misconfigured file-authoring features can increase the risk of unauthorised access.
 - **Telnet (port 23):** Telnet does not encrypt login credentials or session traffic, so information may be exposed if someone can observe the network.
 
-![Nmap results](full-nmap-scan.png)
+![Nmap results](/screenshots/full-nmap-scan.png))
 
 ## Problems I Hit
 
@@ -132,25 +130,24 @@ I learned how to identify the IP addresses of my lab machines, check their netwo
 
 **Goal:** see what an Nmap scan actually looks like as network traffic.
 
-**Setup:** I started a capture on Kali's host-only interface ([eth1]), then ran `nmap -sS [target-ip]` against the target. I stopped the capture when the scan finished.
+**Setup:** I started a capture on Kali's host-only interface ([eth1]), then ran `nmap -sS 192.168.56.102` against the target. I stopped the capture when the scan finished.
 
 **Filters I used:**
-- `ip.addr == [target-ip]` to show only lab traffic
+- `ip.addr == 192.168.56.102` to show only lab traffic
 - `tcp.flags.syn == 1 && tcp.flags.ack == 0` to show only the first packet of each connection attempt
 - `tcp.flags.reset == 1` to show closed ports
 
 **What I observed:**
 - **Open port:** Kali sent a SYN, the target replied with SYN-ACK, and Kali sent a RST instead of completing the handshake. That's why it's called a "half-open" or SYN scan.
 - **Closed port:** Kali sent a SYN and the target replied with RST-ACK.
-- **Volume and speed:** [e.g. about X packets in Y seconds, sent to many different ports in rapid order]
 
-![Wireshark: SYN scan](screenshots/wireshark-syn-scan.png)
+![Wireshark: SYN scan](/screenshots/lab-capture.png)
 
 **Why this matters:** a pattern of SYN packets to many ports from one source, in a short time, is a recognisable sign of a port scan. A defender could spot it in logs, which is something I plan to explore in Project 5.
 
 **What I learned:**
-- [e.g. How Nmap decides a port is open or closed from the reply it gets]
-- [e.g. How the TCP handshake I studied in week one appears in real traffic]
+- learned that Nmap identifies whether a port is open, closed, or filtered by analyzing the responses it receives from the target.
+- I learned how the TCP three-way handshake works (SYN, SYN-ACK, ACK) and how these packets help establish a connection between two machines.
 
 ## Web Attack Practice
 
@@ -161,7 +158,8 @@ I tested the SQL Injection page in DVWA and learned how unsafe user input can af
 - What happened: The application returned user information from the database.
 - Developer fix: Use parameterised queries to prevent user input from changing SQL commands.
   
-**Screenshot:** `screenshots/sql-injection.png`
+**Screenshot:**
+![SQL injection](/screenshots/sql-injection.png)
 
 ### 2. Reflected XSS
 I tested the Reflected XSS page and learned how unsafe input can cause JavaScript to execute in the browser. Developers should use proper output encoding.
@@ -170,7 +168,8 @@ I tested the Reflected XSS page and learned how unsafe input can cause JavaScrip
 - What happened: The browser displayed an alert box because the input was handled unsafely.
 - Developer fix: Use context-aware output encoding and safely handle user input.
 
-**Screenshot:** `screenshots/reflected-xss.png`
+**Screenshot:** 
+![Reflected XSS](/screenshots/reflected-xss.png)
 
 ### 3. Stored XSS
 I tested the Stored XSS page and learned that unsafe input can be saved and affect users who visit the page later. Developers should safely handle user-generated content.
@@ -179,7 +178,9 @@ I tested the Stored XSS page and learned that unsafe input can be saved and affe
 - What happened: The message was saved and triggered an alert when the page was loaded again.
 - Developer fix: Safely encode user-generated content before displaying it.
 
-**Screenshot:** `screenshots/stored-xss.png`
+**Screenshot:** 
+![Stored XSS](/screenshots/stored-xss.png)
+
 
 ### 4. Brute Force
 I tested the DVWA login page using Burp Suite Intruder with a small list of test credentials. I learned how to compare HTTP responses to identify potentially successful login attempts. Rate limiting and multi-factor authentication can help protect login pages.
@@ -188,20 +189,26 @@ I tested the DVWA login page using Burp Suite Intruder with a small list of test
 - What happened: I compared HTTP response messages and lengths to identify potentially successful login attempts.
 - Developer fix: Implement rate limiting, multi-factor authentication, and monitoring for repeated failed logins.
 
-**Screenshot:** `screenshots/brute-force.png`
+**Screenshot:** 
+![Brute Force](/screenshots/brute-force.png)
+
 
 ## Results
 - Built an isolated lab (Kali attacker, Metasploitable target) on a host-only network.
-- Verified isolation: Kali reaches the target, the target has no internet access.
+- Verified isolation: Kali reaches the target; the target has no internet access.
 - Scanned the target with Nmap and captured the traffic in Wireshark.
 - Exploited SQL injection and XSS on DVWA, and tried brute force with Burp Intruder, all inside the lab.
 
 ## Skills demonstrated
-Virtualization and network isolation, Nmap scanning, packet analysis in Wireshark, Burp Suite, web vulnerability testing, safe lab practice, technical documentation.
+Virtualisation and network isolation, Nmap scanning, packet analysis in Wireshark, Burp Suite, web vulnerability testing, safe lab practice, technical documentation.
 
 ## What I learned
-- [2-3 sentences in your own words, such as why isolation matters or what surprised you]
+- Isolation is the foundation of a safe lab. Because the target is deliberately vulnerable, it must only talk to Kali, so I checked both directions: Kali reached the target, and the target couldn't reach the internet.
+- Watching an Nmap scan in Wireshark made networking click. I could see the SYN packets, the SYN-ACK replies from open ports, and the RST replies from closed ones, which connected the TCP handshake I'd studied to a real tool.
+- Attacking DVWA showed me how SQL injection, XSS, and weak login protection work in practice. In each case, the application trusted user input too much, and I also noted how a developer would fix it.
+- Snapshots are very useful. They let me practise freely, because I could always restore a clean state.
 
 ## Limitations and next improvements
-- [e.g. Only one target machine so far]
-- [e.g. No logging or detection yet, which I'll add in Project 5 with Wazuh]
+- The lab has only one target machine, so I haven't practised moving between systems yet.
+- I tested only the "Low" security level in DVWA. Higher levels would show how defences change the attacks.
+- The network is flat, with no firewall or segmentation. A future version could add a more realistic network structure.
