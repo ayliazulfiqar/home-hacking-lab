@@ -127,5 +127,80 @@ I learned how to identify the IP addresses of my lab machines, check their netwo
 - Session 3: capture a scan in Wireshark and write up the results
 - Practice attacks on DVWA inside the lab
 
+## Wireshark capture of the scan
 
+**Goal:** see what an Nmap scan actually looks like as network traffic.
 
+**Setup:** I started a capture on Kali's host-only interface ([eth1]), then ran `nmap -sS [target-ip]` against the target. I stopped the capture when the scan finished.
+
+**Filters I used:**
+- `ip.addr == [target-ip]` to show only lab traffic
+- `tcp.flags.syn == 1 && tcp.flags.ack == 0` to show only the first packet of each connection attempt
+- `tcp.flags.reset == 1` to show closed ports
+
+**What I observed:**
+- **Open port:** Kali sent a SYN, the target replied with SYN-ACK, and Kali sent a RST instead of completing the handshake. That's why it's called a "half-open" or SYN scan.
+- **Closed port:** Kali sent a SYN and the target replied with RST-ACK.
+- **Volume and speed:** [e.g. about X packets in Y seconds, sent to many different ports in rapid order]
+
+![Wireshark: SYN scan](screenshots/wireshark-syn-scan.png)
+
+**Why this matters:** a pattern of SYN packets to many ports from one source, in a short time, is a recognisable sign of a port scan. A defender could spot it in logs, which is something I plan to explore in Project 5.
+
+**What I learned:**
+- [e.g. How Nmap decides a port is open or closed from the reply it gets]
+- [e.g. How the TCP handshake I studied in week one appears in real traffic]
+
+## Web Attack Practice
+
+### 1. SQL Injection
+I tested the SQL Injection page in DVWA and learned how unsafe user input can affect database queries. Developers can prevent this by using parameterised queries.
+- Vulnerable input: User ID field.
+- What I typed: A SQL injection test input in the user ID field.
+- What happened: The application returned user information from the database.
+- Developer fix: Use parameterised queries to prevent user input from changing SQL commands.
+  
+**Screenshot:** `screenshots/sql-injection.png`
+
+### 2. Reflected XSS
+I tested the Reflected XSS page and learned how unsafe input can cause JavaScript to execute in the browser. Developers should use proper output encoding.
+- Vulnerable input: Name input field.
+- What I typed: A harmless JavaScript alert test.
+- What happened: The browser displayed an alert box because the input was handled unsafely.
+- Developer fix: Use context-aware output encoding and safely handle user input.
+
+**Screenshot:** `screenshots/reflected-xss.png`
+
+### 3. Stored XSS
+I tested the Stored XSS page and learned that unsafe input can be saved and affect users who visit the page later. Developers should safely handle user-generated content.
+- Vulnerable input: Guestbook message field.
+- What I typed: A harmless alert test as a message.
+- What happened: The message was saved and triggered an alert when the page was loaded again.
+- Developer fix: Safely encode user-generated content before displaying it.
+
+**Screenshot:** `screenshots/stored-xss.png`
+
+### 4. Brute Force
+I tested the DVWA login page using Burp Suite Intruder with a small list of test credentials. I learned how to compare HTTP responses to identify potentially successful login attempts. Rate limiting and multi-factor authentication can help protect login pages.
+- Vulnerable input: DVWA login form.
+- What I typed: A small list of test usernames and passwords in Burp Intruder.
+- What happened: I compared HTTP response messages and lengths to identify potentially successful login attempts.
+- Developer fix: Implement rate limiting, multi-factor authentication, and monitoring for repeated failed logins.
+
+**Screenshot:** `screenshots/brute-force.png`
+
+## Results
+- Built an isolated lab (Kali attacker, Metasploitable target) on a host-only network.
+- Verified isolation: Kali reaches the target, the target has no internet access.
+- Scanned the target with Nmap and captured the traffic in Wireshark.
+- Exploited SQL injection and XSS on DVWA, and tried brute force with Burp Intruder, all inside the lab.
+
+## Skills demonstrated
+Virtualization and network isolation, Nmap scanning, packet analysis in Wireshark, Burp Suite, web vulnerability testing, safe lab practice, technical documentation.
+
+## What I learned
+- [2-3 sentences in your own words, such as why isolation matters or what surprised you]
+
+## Limitations and next improvements
+- [e.g. Only one target machine so far]
+- [e.g. No logging or detection yet, which I'll add in Project 5 with Wazuh]
