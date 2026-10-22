@@ -1,4 +1,4 @@
-# home-lab
+# Home Hacking Lab
 An isolated lab for practising penetration testing legally.
 
 ## Tools chosen
@@ -54,7 +54,8 @@ The Nmap scan confirmed that Kali could reach the target. The target's ping test
 
 The target's failed ping is a useful check, but I should also verify its VirtualBox adapter settings and routing configuration to confirm the intended isolation.
 
-![Ping test](ping-tes.png)
+![Ping test kali linux](https://github.com/ayliazulfiqar/home-hacking-lab/blob/main/screenshots/kali-ports-output.png)
+![Ping test metaspoitable](https://github.com/ayliazulfiqar/home-hacking-lab/blob/main/screenshots/metasploitable.png)
 
 ## Snapshots
 
